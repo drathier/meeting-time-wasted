@@ -1,13 +1,14 @@
 module Main exposing (..)
 
-import Html exposing (program, div, button, text)
-import Html.Events exposing (onClick)
+import Html exposing (button, div, input, program, text)
+import Html.Attributes exposing (placeholder, type_, value)
+import Html.Events exposing (onClick, onInput)
 import Time exposing (Time, every, hour, minute, second, millisecond, inHours, inMinutes, inSeconds)
 
 
 main =
     program
-        { init = ( { people = 1, time = 0 }, Cmd.none )
+        { init = ( { people = 1, time = 0, emptyPeopleInput = False }, Cmd.none )
         , view = view
         , update = update
         , subscriptions = subscriptions
@@ -16,13 +17,72 @@ main =
 
 view model =
     div []
-        [ div [] [ text <| String.join ":" <| List.map leftPad2 <| timeToIntList model.time ]
+        [ div []
+            [ text <|
+                String.concat
+                    [ if model.time < 0 then
+                        "-"
+                      else
+                        ""
+                    , String.join ":" <|
+                        List.map leftPad2 <|
+                            timeToIntList <|
+                                abs model.time
+                    ]
+            ]
         , div []
-            [ button [ onClick Increment ] [ text "+" ]
+            [ input
+                [ placeholder "1"
+                , onInput PeopleCountChange
+                , type_ "number"
+                , value <|
+                    if model.emptyPeopleInput then
+                        ""
+                    else
+                        toString model.people
+                ]
+                []
             , div [] [ text (toString model) ]
-            , button [ onClick Decrement ] [ text "-" ]
             ]
         ]
+
+
+type alias Model =
+    { people : Int
+    , time : Time
+    , emptyPeopleInput : Bool
+    }
+
+
+type Msg
+    = PeopleCountChange String
+    | Tick Time
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        PeopleCountChange newCountStr ->
+            case String.toInt newCountStr of
+                Err _ ->
+                    ( { model | people = 1, emptyPeopleInput = True }, Cmd.none )
+
+                Ok newCount ->
+                    let
+                        count =
+                            clamp -1000 1000 newCount
+                    in
+                        ( { model | people = count, emptyPeopleInput = False }, Cmd.none )
+
+        Tick t ->
+            let
+                diff =
+                    if model.people < 0 then
+                        -1
+                    else
+                        1
+            in
+                ( { model | time = model.time + diff * second }, Cmd.none )
 
 
 leftPad2 : Int -> String
@@ -65,36 +125,8 @@ timeToIntListImpl t last =
             [ s ]
 
 
-type alias Model =
-    { people : Int
-    , time : Time
-    }
-
-
-type Msg
-    = Increment
-    | Decrement
-    | Tick Time
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        Increment ->
-            if model.people < 1000 then
-                ( { model | people = model.people + 1 }, Cmd.none )
-            else
-                ( model, Cmd.none )
-
-        Decrement ->
-            if model.people > 1 then
-                ( { model | people = model.people - 1 }, Cmd.none )
-            else
-                ( model, Cmd.none )
-
-        Tick t ->
-            ( { model | time = model.time + 1 * second }, Cmd.none )
-
-
 subscriptions model =
-    every (toFloat (1000 // model.people) * millisecond) Tick
+    if model.people == 0 then
+        Sub.none
+    else
+        every (toFloat (1000 // abs model.people) * millisecond) Tick
