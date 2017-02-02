@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (button, div, input, program, text)
-import Html.Attributes exposing (placeholder, type_, value)
+import Html.Attributes exposing (placeholder, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Time exposing (Time, every, hour, minute, second, millisecond, inHours, inMinutes, inSeconds)
 
@@ -17,7 +17,16 @@ main =
 
 view model =
     div []
-        [ div []
+        [ div
+            [ style
+                [ ("position", "absolute")
+                , ("top", "50%")
+                , ("left", "50%")
+                , ("transform", "translate(-50%, -50%)") -- -.5 * dimension
+                , ("font-size", "20vmin")
+                , ("font-family", "'Lucida Console', Consolas, monospace")
+                ]
+            ]
             [ text <|
                 String.concat
                     [ if model.time < 0 then
@@ -30,9 +39,18 @@ view model =
                                 abs model.time
                     ]
             ]
-        , div []
+        , div
+            [ style
+                [ ("position", "fixed")
+                , ("bottom", "0px")
+                , ("float", "left")
+                ]
+            ]
             [ input
-                [ placeholder "1"
+                [ style
+                    [("float", "left")
+                    ]
+                , placeholder "1"
                 , onInput PeopleCountChange
                 , type_ "number"
                 , value <|
@@ -42,8 +60,17 @@ view model =
                         toString model.people
                 ]
                 []
-            , div [] [ text (toString model) ]
-            ]
+            , div
+                [ style
+                    [ ("float", "left")
+                    , ("padding-left", "5px")
+                    ]
+                ]
+                [ text ("People") ]
+            {-, div
+             []
+             [ text (toString model) ]
+            -}]
         ]
 
 
