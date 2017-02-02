@@ -49,6 +49,7 @@ view model =
             [ input
                 [ style
                     [("float", "left")
+                    , ("width", "3rem")
                     ]
                 , placeholder "1"
                 , onInput PeopleCountChange
