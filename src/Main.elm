@@ -1,7 +1,7 @@
 module Main exposing (..)
 
-import Html exposing (button, div, input, program, text)
-import Html.Attributes exposing (placeholder, style, type_, value)
+import Html exposing (a, button, div, input, program, text)
+import Html.Attributes exposing (href, placeholder, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Time exposing (Time, every, hour, minute, second, millisecond, inHours, inMinutes, inSeconds)
 
@@ -19,12 +19,12 @@ view model =
     div []
         [ div
             [ style
-                [ ("position", "absolute")
-                , ("top", "50%")
-                , ("left", "50%")
-                , ("transform", "translate(-50%, -50%)") -- -.5 * dimension
-                , ("font-size", "20vmin")
-                , ("font-family", "'Lucida Console', Consolas, monospace")
+                [ ( "position", "absolute" )
+                , ( "top", "50%" )
+                , ( "left", "50%" )
+                , ( "transform", "translate(-50%, -50%)" )
+                , ( "font-size", "20vmin" )
+                , ( "font-family", "'Lucida Console', Consolas, monospace" )
                 ]
             ]
             [ text <|
@@ -41,15 +41,15 @@ view model =
             ]
         , div
             [ style
-                [ ("position", "fixed")
-                , ("bottom", "0px")
-                , ("float", "left")
+                [ ( "position", "fixed" )
+                , ( "bottom", "0px" )
+                , ( "float", "left" )
                 ]
             ]
             [ input
                 [ style
-                    [("float", "left")
-                    , ("width", "3rem")
+                    [ ( "float", "left" )
+                    , ( "width", "3rem" )
                     ]
                 , placeholder "1"
                 , onInput PeopleCountChange
@@ -63,15 +63,25 @@ view model =
                 []
             , div
                 [ style
-                    [ ("float", "left")
-                    , ("padding-left", "5px")
+                    [ ( "float", "left" )
+                    , ( "padding-left", "5px" )
                     ]
                 ]
                 [ text ("People") ]
-            {-, div
-             []
-             [ text (toString model) ]
-            -}]
+            ]
+        , div
+            [ style
+                [ ( "position", "fixed" )
+                , ( "bottom", "0px" )
+                , ( "right", "0px" )
+                , ( "margin", "0.3em" )
+                ]
+            ]
+            [ a
+                [ href "https://github.com/drathier/meeting-time-wasted"
+                ]
+                [ text "Source is on Github" ]
+            ]
         ]
 
 
@@ -125,7 +135,7 @@ leftPad2 n =
 
 timeToIntList : Time -> List Int
 timeToIntList t =
-    timeToIntListImpl t ""
+    timeToIntListImpl t "d"
 
 
 timeToIntListImpl : Time -> String -> List Int
